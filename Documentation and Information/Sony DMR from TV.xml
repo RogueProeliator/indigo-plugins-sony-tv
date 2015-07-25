@@ -1,0 +1,79 @@
+<!-- http://172.16.1.113:52323/dmr.xml -->
+<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:pnpx="http://schemas.microsoft.com/windows/pnpx/2005/11" xmlns:df="http://schemas.microsoft.com/windows/2008/09/devicefoundation">
+<specVersion>
+<major>1</major>
+<minor>0</minor>
+</specVersion>
+<device>
+<deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>
+<friendlyName>BRAVIA KDL-32W650A</friendlyName>
+<manufacturer>Sony Corporation</manufacturer>
+<manufacturerURL>http://www.sony.net/</manufacturerURL>
+<modelName>KDL-32W650A</modelName>
+<modelNumber>MINT1.7.0.1</modelNumber>
+<UDN>uuid:00000000-0000-1010-8000-d8d43c58ba1d</UDN>
+<dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMR-1.50</dlna:X_DLNADOC>
+<microsoft:magicPacketWakeSupported xmlns:microsoft="urn:schemas-microsoft-com:WMPNSS-1-0">1</microsoft:magicPacketWakeSupported>
+<iconList>...</iconList>
+<serviceList>
+<service>
+<serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>
+<SCPDURL>/RenderingControlSCPD.xml</SCPDURL>
+<controlURL>/upnp/control/RenderingControl</controlURL>
+<eventSubURL>/upnp/event/RenderingControl</eventSubURL>
+</service>
+<service>
+<serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
+<SCPDURL>/ConnectionManagerSCPD.xml</SCPDURL>
+<controlURL>/upnp/control/ConnectionManager</controlURL>
+<eventSubURL>/upnp/event/ConnectionManager</eventSubURL>
+</service>
+<service>
+<serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+<SCPDURL>/AVTransportSCPD.xml</SCPDURL>
+<controlURL>/upnp/control/AVTransport</controlURL>
+<eventSubURL>/upnp/event/AVTransport</eventSubURL>
+</service>
+<service>
+<serviceType>urn:dial-multiscreen-org:service:dial:1</serviceType>
+<serviceId>urn:dial-multiscreen-org:serviceId:dial</serviceId>
+<SCPDURL>/DIALSCPD.xml</SCPDURL>
+<controlURL>/upnp/control/DIAL</controlURL>
+<eventSubURL/>
+</service>
+<service>
+<serviceType>urn:schemas-sony-com:service:IRCC:1</serviceType>
+<serviceId>urn:schemas-sony-com:serviceId:IRCC</serviceId>
+<SCPDURL>/IRCCSCPD.xml</SCPDURL>
+<controlURL>http://172.16.1.113/sony/IRCC</controlURL>
+<eventSubURL/>
+</service>
+<service>
+<serviceType>urn:schemas-sony-com:service:ScalarWebAPI:1</serviceType>
+<serviceId>urn:schemas-sony-com:serviceId:ScalarWebAPI</serviceId>
+<SCPDURL>/ScalarWebApiSCPD.xml</SCPDURL>
+<controlURL>/upnp/control/ScalarAPI</controlURL>
+<eventSubURL/>
+</service>
+</serviceList>
+<av:X_MaxBGMCount xmlns:av="urn:schemas-sony-com:av">64</av:X_MaxBGMCount>
+<av:X_StandardDMR xmlns:av="urn:schemas-sony-com:av">1.1</av:X_StandardDMR>
+<av:X_ScreenResolution xmlns:av="urn:schemas-sony-com:av">2K</av:X_ScreenResolution>
+<av:X_IRCCCodeList xmlns:av="urn:schemas-sony-com:av">
+<av:X_IRCCCode command="Power">AAAAAQAAAAEAAAAVAw==</av:X_IRCCCode>
+<av:X_IRCCCode command="Power ON">AAAAAQAAAAEAAAAuAw==</av:X_IRCCCode>
+<av:X_IRCCCode command="Power OFF">AAAAAQAAAAEAAAAvAw==</av:X_IRCCCode>
+</av:X_IRCCCodeList>
+<pnpx:X_compatibleId>MS_DigitalMediaDeviceClass_DMR_V001</pnpx:X_compatibleId>
+<pnpx:X_deviceCategory>MediaDevices</pnpx:X_deviceCategory>
+<pnpx:X_hardwareId>VEN_0106&DEV_0006&REV_01</pnpx:X_hardwareId>
+<df:X_deviceCategory>Display.TV Multimedia.DMR</df:X_deviceCategory>
+<av:X_TrackID_DeviceInfo xmlns:av="urn:schemas-sony-com:av">...</av:X_TrackID_DeviceInfo>
+<av:X_DIALEX_DeviceInfo xmlns:av="urn:schemas-sony-com:av">...</av:X_DIALEX_DeviceInfo>
+<av:X_ScalarWebAPI_DeviceInfo xmlns:av="urn:schemas-sony-com:av">...</av:X_ScalarWebAPI_DeviceInfo>
+<av:X_RDIS_DeviceInfo xmlns:av="urn:schemas-sony-com:av">...</av:X_RDIS_DeviceInfo>
+</device>
+</root>

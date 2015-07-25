@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<MenuItems>
+	<MenuItem id="pairSonyDevice">
+		<Name>Pair to Sony Device</Name>
+		<ConfigUI>
+			<Field id="sonyDevicePairing_Title" type="label" fontColor="darkGray">
+				<Label>SONY DEVICE PAIRING</Label>
+			</Field>
+			<Field id="titleSeparator" type="separator" />
+			<Field type="label" id="pairingGUIInstructions" fontSize="small">
+				<Label>Some Sony devices require that any network remote device complete a pairing before any network commands will be accepted; this dialog will attempt to authenticate to the device and, if required, allow you to enter a PIN number displayed on the device to complete the pairing process.</Label>
+			</Field>
+			<Field id="targetDevice" type="menu">
+				<Label>Device:</Label>
+				<List class="indigo.devices" filter="self" /> 
+			</Field>
+			
+			<Field id="registrationMsgControl" type="textfield" defaultValue="0" hidden="true">
+				<Label />
+			</Field>
+			<Field id="devicePIN" type="textfield" visibleBindingId="registrationMsgControl" visibleBindingValue="5">
+				<Label>PIN from Device:</Label>	
+			</Field>			
+			<Field type="label" id="devicePINInstructions" fontSize="small" visibleBindingId="registrationMsgControl" visibleBindingValue="5,6">
+				<Label>Please enter the PIN number shown on the device and attempt the pairing again.</Label>
+			</Field>
+			<Field type="label" id="devicePINInstructionsReentry" fontSize="small" visibleBindingId="registrationMsgControl" visibleBindingValue="6">
+				<Label>The PIN number did not allow a pairing, please check the PIN and attempt the pairing again.</Label>
+			</Field>
+			<Field id="registrationErrorWithDebug" type="label" alignWithControl="true" fontColor="red" visibleBindingId="registrationMsgControl" visibleBindingValue="1">
+				<Label>ERROR: An unknown error occurred while attempting to authenticate; additional debug information has been added to the Indigo log.</Label>
+			</Field>
+			<Field id="registrationErrorNoDebug" type="label" alignWithControl="true" fontColor="red" visibleBindingId="registrationMsgControl" visibleBindingValue="2">
+				<Label>ERROR: An unknown error occurred while attempting to authenticate; please turn on Debugging in the plugin configuration and re-attempt the pair to gain additional information.</Label>
+			</Field>
+			<Field id="selectedDeviceValidationOK" type="label" alignWithControl="true" fontColor="blue" visibleBindingId="registrationMsgControl" visibleBindingValue="99">
+				<Label>Successfully paired to the selected device and received an authentication token!</Label>
+			</Field>
+			<Field id="selectedDeviceValidationPlaceholder" type="label" alignWithControl="true" visibleBindingId="registrationMsgControl" visibleBindingValue="0">
+				<Label> </Label>
+			</Field>
+			<Field id="selectedDeviceValidationPlaceholder2" type="label" alignWithControl="true" visibleBindingId="registrationMsgControl" visibleBindingValue="0">
+				<Label> </Label>
+			</Field>
+			<Field id="selectedDeviceValidationPlaceholder3" type="label" alignWithControl="true" visibleBindingId="registrationMsgControl" visibleBindingValue="0">
+				<Label> </Label>
+			</Field>
+			
+			<Field id="attemptAuthentication" type="button" enabledBindingId="targetDevice">
+				<Label></Label>
+				<Title>Pair to Device</Title>
+				<CallbackMethod>pairToDevice</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+	<MenuItem id="retrieveRemoteControlInfo">
+		<Name>Retrieve Device IR Codes</Name>
+		<CallbackMethod>retrieveIRCodesFromDevice</CallbackMethod>
+		<ButtonTitle>Get Codes</ButtonTitle>
+		<ConfigUI>
+			<Field id="sonyIRCodeRetrievalTitle" type="label" fontColor="darkGray">
+				<Label>SONY DEVICE IR CODE DOWNLOAD</Label>
+			</Field>
+			<Field id="titleSeparator" type="separator" />
+			<Field type="label" id="irCodeDownloadInstructions" fontSize="small">
+				<Label>If you are having trouble with some IR codes not working as expected, it may be that your device has different commands than the plugin expects. This interface will allow you to (attempt) to retrieve the supported commands from the device so that they may be provided to the developer.</Label>
+			</Field>
+			<Field id="targetDevice" type="menu">
+				<Label>Device:</Label>
+				<List class="indigo.devices" filter="self" /> 
+			</Field>
+			<Field type="label" id="retrieveRemoteControlInfoOutput" fontColor="blue">
+				<Label>NOTE: If successful, your results will be launched in a browser window on the server; a failure should produce log entries in the Indigo server log.</Label>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+	<MenuItem id="sendNonDocumentedIRCommand">
+		<Name>Send Arbitrary IR Code</Name>
+		<CallbackMethod>sendArbitraryIRCode</CallbackMethod>
+		<ButtonTitle>Send Code</ButtonTitle>
+		<ConfigUI>
+			<Field id="sendArbitraryIRTitle" type="label" fontColor="darkGray">
+				<Label>SEND ARBITRARY IR CODE</Label>
+			</Field>
+			<Field id="irTitleSeparator" type="separator" />
+			<Field type="label" id="irSendInstructions" fontSize="small">
+				<Label>This allows sending an arbitrary IR code to the Sony device for use in debugging control codes. The code will be sent just as if from the Send IR Code action, but with any value typed here.</Label>
+			</Field>
+			<Field id="targetDevice" type="menu">
+				<Label>Device:</Label>
+				<List class="indigo.devices" filter="self" /> 
+			</Field>
+			<Field type="textfield" id="irCodeToSend">
+				<Label>IR Code:</Label>
+			</Field>
+			<Field id="exampleIRCodeFormat" type="label" fontSize="small" alignWithControl="true">
+				<Label>Example IR Code: AAAAAgAAABoAAAByAw==</Label>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+	<MenuItem id="deviceCmdsSeparator" type="separator" />
+	[DEBUGOPTIONS]
+</MenuItems>

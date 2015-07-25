@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<Devices>
+
+	<!-- a simple, one-way Sony Bravia network remote... it does not attempt to actively -->
+	<!-- communicate TV status due to limitations of the Sony IRCC interface/protocol -->
+	<Device type="custom" id="sonyTvRemoteDevice">
+		<Name>Sony TV Network Remote Control</Name>
+		<ConfigUI>	
+			<Field id="commOptionsTitle" type="label" fontColor="darkGray">
+				<Label>NETWORK OPTIONS</Label>
+			</Field>
+			<Field id="instructionSeparator2" type="separator" />
+			<Field id="deviceSelectionInstructions" type="label" fontSize="small">
+				<Label>Please select a suitable television from those found on the network. If your device is not found or you would prefer to manually set an IP address for the device, enter the IP address in the field provided.</Label>
+			</Field>
+			<Field id="upnpEnumeratedDevices" type="menu">
+				<Label>Devices Found:</Label>
+				<List class="self" filter="" method="getConfigDialogUPNPDeviceMenu" />
+			</Field>
+			<Field id="selectEnumeratedDevice" type="button" enabledBindingId="upnpEnumeratedDevices">
+				<Label></Label>
+				<Title>Use Selected Device</Title>
+				<CallbackMethod>selectUPNPEnumeratedDeviceForUse</CallbackMethod>
+			</Field>
+			<Field id="validationMsgControl" type="textfield" defaultValue="0" hidden="true">
+				<Label />
+			</Field>
+			<Field id="selectedDeviceValidationWarning" type="label" alignWithControl="true" fontColor="red" visibleBindingId="validationMsgControl" visibleBindingValue="2">
+				<Label>WARNING: Could not locate control service on the selected device. Please see the forums for assistance if the device is not controlable.</Label>
+			</Field>
+			<Field id="selectedDeviceValidationGenericError" type="label" alignWithControl="true" fontColor="red" visibleBindingId="validationMsgControl" visibleBindingValue="1">
+				<Label>ERROR: Failed to set the location of the device or control service. Please try closing the dialog and re-opening or manually set the connection information.</Label>
+			</Field>
+			<Field id="selectedDeviceValidationOK" type="label" alignWithControl="true" fontColor="blue" visibleBindingId="validationMsgControl" visibleBindingValue="99">
+				<Label>Successfully found remote control service on the selected device. You may still need to pair to the device in order to gain control, depending upon the device's settings.</Label>
+			</Field>
+			
+			<Field id="httpAddress" type="textfield">
+				<Label>Hostname or IP Address:</Label>	
+			</Field>
+			<Field id="httpPort" type="textfield" defaultValue="80">
+				<Label>Port:</Label>
+			</Field>
+			<Field id="queryPath" type="textfield" defaultValue="/sony/IRCC">
+				<Label>Path:</Label>
+			</Field>
+			<Field id="macAddress" type="textfield">
+				<Label>MAC Address:</Label>
+			</Field>
+			<Field id="macAddressInstructions" type="label" fontSize="small" alignWithControl="true">
+				<Label>In order to send a Power-On command, the plugin must know the MAC address of your television's network interface card. You may enter it here or click the "Read MAC Address" button after having filled in the IP address above.</Label>
+			</Field>
+			<Field id="findMacAddress" type="button">
+				<Label></Label>
+				<Title>Read MAC Address</Title>
+				<CallbackMethod>readMACAddress</CallbackMethod>
+			</Field>
+			<Field id="address" type="textfield" hidden='true' >
+				<Label/>
+			</Field>
+			
+			<Field id="securityOptionsTitle" type="label" fontColor="darkGray">
+				<Label>SECURITY SETTINGS</Label>
+			</Field>
+			<Field id="secSettingsSeparator2" type="separator" />
+			<Field id="secSettingsInstructions" type="label" fontSize="small">
+				<Label>You normally will not need to adjust any security settings, but may need to if the plugin is not able to determine the device type</Label>
+			</Field>
+			<Field id="authCookie" type="textfield" readonly='true'>
+				<Label>Auth Token:</Label>
+			</Field>
+			<Field id="authMethod" type="menu" defaultValue="accessControl">
+				<Label>Auth Method:</Label>
+				<List>
+					<Option value="accessControl">sony/accessControl</Option>
+				</List>
+			</Field>
+		</ConfigUI>
+	</Device>
+	
+</Devices>

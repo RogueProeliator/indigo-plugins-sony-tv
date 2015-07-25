@@ -1,0 +1,113 @@
+<RPFrameworkConfig>
+	<pluginConfig>
+		<guiConfiguration>
+			<showUPnPDebug>True</showUPnPDebug>
+			<pluginUpdateURL><![CDATA[http://forums.indigodomo.com/viewtopic.php?f=68&t=11142]]></pluginUpdateURL>
+		</guiConfiguration>
+		<deviceMapping>
+			<device indigoId="sonyTvRemoteDevice" className="SonyTvNetworkRemoteDevice" />
+		</deviceMapping>
+		<devices>
+			<device indigoId="sonyTvRemoteDevice">
+				<params>
+					<param indigoId="httpAddress" paramType="ParamTypeString" isRequired="True">
+						<validationExpression><![CDATA[^[a-z\d\. ]+$]]></validationExpression>
+						<invalidValueMessage><![CDATA[Please select the device to control or enter the IP address]]></invalidValueMessage>
+					</param>
+					<param indigoId="httpPort" paramType="ParamTypeInteger" isRequired="True">
+						<minValue>1</minValue>
+						<maxValue>99999</maxValue>
+						<defaultValue>80</defaultValue>
+						<invalidValueMessage><![CDATA[Please enter a valid port number for the television to control]]></invalidValueMessage>
+					</param>
+					<param indigoId="macAddress" paramType="ParamTypeString" isRequired="False">
+						<validationExpression><![CDATA[^([a-f\d]{1,2}\:){5}[a-f\d]{1,2}$]]></validationExpression>
+						<invalidValueMessage><![CDATA[Please enter a valid MAC address using colon separators (aa:bb:cc:dd:ee:ff)]]></invalidValueMessage>
+					</param>
+				</params>
+				<guiConfiguration>
+					<deviceAddressFormat><![CDATA[%ap:httpAddress%:%ap:httpPort%]]></deviceAddressFormat>
+					<deviceUPNPServiceId>ssdp:all</deviceUPNPServiceId>
+					<deviceUPNPDeviceSelectedFieldId>httpAddress:httpPort</deviceUPNPDeviceSelectedFieldId>
+				</guiConfiguration>
+				<deviceResponses>
+					<response id="getRemoteIRCommandsResp" respondToActionId="downloadRemoteCommands">
+						<criteriaFormatString></criteriaFormatString>
+						<matchExpression></matchExpression>
+						<effects>
+							<effect effectType="RESPONSE_EFFECT_CALLBACK" evalResult="false">
+								<updateParam>remoteDeviceIRCommandListReceived</updateParam>
+								<updateValueFormat></updateValueFormat>
+							</effect>
+						</effects>
+					</response>
+				</deviceResponses>
+			</device>
+		</devices>
+		<actions>
+			<action indigoId="sendRemoteButton">
+				<commands>
+					<command>
+						<commandName>SOAP_REQUEST</commandName>
+						<commandFormat><![CDATA[
+						%dp:queryPath%
+						urn:schemas-sony-com:service:IRCC:1#X_SendIRCC
+						<?xml version="1.0" encoding="UTF-8"?>
+						<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+							<SOAP-ENV:Body>
+								<m:X_SendIRCC xmlns:m="urn:schemas-sony-com:service:IRCC:1">
+									<IRCCCode xmlns:dt="urn:schemas-microsoft-com:datatypes" dt:dt="string">%ap:buttonSelect%</IRCCCode>
+								</m:X_SendIRCC>
+							</SOAP-ENV:Body>
+						</SOAP-ENV:Envelope>
+						]]></commandFormat>
+					</command>
+				</commands>
+				<params>
+					<param indigoId="buttonSelect" paramType="ParamTypeString" isRequired="True">
+						<invalidValueMessage><![CDATA[Please select a button to send to the device]]></invalidValueMessage>
+					</param>
+				</params>
+			</action>
+			<action indigoId="sendPowerOnCommand">
+				<commands>
+					<command>
+						<commandName>SENDWOLREQUEST</commandName>
+						<commandFormat><![CDATA[%dp:macAddress%]]></commandFormat>
+					</command>
+				</commands>
+			</action>
+			<action indigoId="sendPowerOffCommand">
+				<commands>
+					<command>
+						<commandName>SOAP_REQUEST</commandName>
+						<commandFormat><![CDATA[
+						%dp:queryPath%
+						urn:schemas-sony-com:service:IRCC:1#X_SendIRCC
+						<?xml version="1.0" encoding="UTF-8"?>
+						<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+							<SOAP-ENV:Body>
+								<m:X_SendIRCC xmlns:m="urn:schemas-sony-com:service:IRCC:1">
+									<IRCCCode xmlns:dt="urn:schemas-microsoft-com:datatypes" dt:dt="string">AAAAAQAAAAEAAAAvAw==</IRCCCode>
+								</m:X_SendIRCC>
+							</SOAP-ENV:Body>
+						</SOAP-ENV:Envelope>
+						]]></commandFormat>
+					</command>
+				</commands>
+			</action>
+			<action indigoId="downloadRemoteCommands">
+				<commands>
+					<command>
+						<commandName>JSON_REQUEST</commandName>
+						<commandFormat><![CDATA[
+						/sony/system
+						NA
+						{"id":20,"method":"getRemoteControllerInfo","version":"1.0","params":[]}
+						]]></commandFormat>
+					</command>
+				</commands>
+			</action>
+		</actions>
+	</pluginConfig>
+</RPFrameworkConfig>

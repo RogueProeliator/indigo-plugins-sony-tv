@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<Actions>
+	<Action id="sendPowerOnCommand" deviceFilter="self">
+		<Name>Power On</Name>
+		<CallbackMethod>executeAction</CallbackMethod>
+	</Action>
+	<Action id="sendPowerOffCommand" deviceFilter="self.sonyTvRemoteDevice">
+		<Name>Power Off</Name>
+		<CallbackMethod>executeAction</CallbackMethod>
+	</Action>
+	<Action id="sep1" />
+	<Action id="sendRemoteButton" deviceFilter="self.sonyTvRemoteDevice">
+		<Name>Send button-pressed command</Name>
+		<CallbackMethod>executeAction</CallbackMethod>
+		<ConfigUI>
+			<Field type="menu" id="buttonSelect">
+				<Label>Remote Button:</Label>
+				<List>
+					<Option value="AAAAAQAAAAEAAAAJAw==">0</Option>
+					<Option value="AAAAAQAAAAEAAAAAAw==">1</Option>
+					<Option value="AAAAAQAAAAEAAAABAw==">2</Option>
+					<Option value="AAAAAQAAAAEAAAACAw==">3</Option>
+					<Option value="AAAAAQAAAAEAAAADAw==">4</Option>
+					<Option value="AAAAAQAAAAEAAAAEAw==">5</Option>
+					<Option value="AAAAAQAAAAEAAAAFAw==">6</Option>
+					<Option value="AAAAAQAAAAEAAAAGAw==">7</Option>
+					<Option value="AAAAAQAAAAEAAAAHAw==">8</Option>
+					<Option value="AAAAAQAAAAEAAAAIAw==">9</Option>
+					<Option value="AAAAAQAAAAEAAAAKAw==">11</Option>
+					<Option value="AAAAAQAAAAEAAAALAw==">12</Option>
+					<Option value="AAAAAgAAAJcAAAAdAw==">.</Option>
+					<Option value="AAAAAgAAABoAAAA7Aw==">*AD</Option>
+					<Option value="AAAAAgAAAHcAAAANAw==">Analog</Option>
+					<Option value="AAAAAQAAAAEAAAA4Aw==">Analog 2</Option>
+					<Option value="AAAAAQAAAAEAAAAXAw==">Audio</Option>
+					<Option value="AAAAAgAAAJcAAAAkAw==">Blue</Option>
+					<Option value="AAAAAgAAAJcAAAAsAw==">BS</Option>
+					<Option value="AAAAAgAAAJcAAAAQAw==">BSCS</Option>
+					<Option value="AAAAAgAAAKQAAAAQAw==">CC (Closed Captioning)</Option>
+					<Option value="AAAAAQAAAAEAAAARAw==">Channel Down</Option>
+					<Option value="AAAAAQAAAAEAAAAQAw==">Channel Up</Option>
+					<Option value="AAAAAgAAAKQAAAA2Aw==">Component 1</Option>
+					<Option value="AAAAAgAAAKQAAAA3Aw==">Component 2</Option>
+					<Option value="AAAAAgAAAKQAAAA4Aw==">Component 3</Option>
+					<Option value="AAAAAQAAAAEAAABlAw==">Confirm</Option>
+					<Option value="AAAAAgAAAJcAAAArAw==">CS</Option>
+					<Option value="AAAAAgAAAJcAAAAVAw==">Ddata</Option>
+					<Option value="AAAAAgAAAHcAAAAfAw==">Delete Video</Option>
+					<Option value="AAAAAQAAAAEAAAA6Aw==">Display</Option>
+					<Option value="AAAAAgAAAJcAAAAdAw==">DOT</Option>
+					<Option value="AAAAAQAAAAEAAAB1Aw==">Down Arrow</Option>
+					<Option value="AAAAAgAAAJcAAABIAw==">Eject</Option>
+					<Option value="AAAAAQAAAAEAAAALAw==">Enter</Option>
+					<Option value="AAAAAgAAAKQAAABbAw==">EPG</Option>
+					<Option value="AAAAAQAAAAEAAABjAw==">Exit</Option>
+					<Option value="AAAAAgAAAJcAAAAcAw==">Fast Forward</Option>
+					<Option value="AAAAAgAAAHcAAAB2Aw==">Favorites</Option>
+					<Option value="AAAAAgAAAJcAAAB5Aw==">Flash Minus</Option>
+					<Option value="AAAAAgAAAJcAAAB4Aw==">Flash Plus</Option>
+					<Option value="AAAAAgAAABoAAAB2Aw==">Football Mode</Option>
+					<Option value="AAAAAgAAAKQAAAA7Aw==">Full Screen/Normal Toggle</Option>
+					<Option value="AAAAAgAAAJcAAAAmAw==">Green / Ten Key</Option>
+					<Option value="AAAAAQAAAAEAAAAOAw==">GGuide</Option>
+					<Option value="AAAAAgAAABoAAABZAw==">HDMI Toggle / DUX</Option>
+					<Option value="AAAAAgAAABoAAABaAw==">HDMI 1</Option>
+					<Option value="AAAAAgAAABoAAABbAw==">HDMI 2</Option>
+					<Option value="AAAAAgAAABoAAABcAw==">HDMI 3</Option>
+					<Option value="AAAAAgAAABoAAABdAw==">HDMI 4</Option>
+					<Option value="AAAAAgAAABoAAABeAw==">HDMI 5</Option>
+					<Option value="AAAAAQAAAAEAAABgAw==">Home</Option>
+					<Option value="AAAAAgAAABoAAAB7Aw==">i-Manual</Option>
+					<Option value="AAAAAQAAAAEAAAAlAw==">Input</Option>
+					<Option value="AAAAAgAAABoAAAB5Aw==">Internet Video</Option>
+					<Option value="AAAAAgAAABoAAAB6Aw==">Internet Widgets</Option>
+					<Option value="AAAAAQAAAAEAAAA7Aw==">Jump</Option>
+					<Option value="AAAAAgAAABoAAAB1Aw==">Key Pad</Option>
+					<Option value="AAAAAQAAAAEAAAA0Aw==">Left Arrow</Option>
+					<Option value="AAAAAgAAAJcAAAA4Aw==">Media</Option>
+					<Option value="AAAAAgAAAHcAAABNAw==">Mode 3D</Option>
+					<Option value="AAAAAQAAAAEAAAAUAw==">Mute</Option>
+					<Option value="AAAAAgAAAHcAAABrAw==">My EPG</Option>
+					<Option value="AAAAAgAAABoAAAB8Aw==">Netflix</Option>
+					<Option value="AAAAAgAAAJcAAAA9Aw==">Next</Option>
+					<Option value="AAAAAgAAAKQAAAAxAw==">Normal Widescreen Mode</Option>
+					<Option value="AAAAAgAAABoAAABkAw==">OneTouch Time Record</Option>
+					<Option value="AAAAAgAAABoAAABiAw==">OneTouch Record</Option>
+					<Option value="AAAAAgAAABoAAABjAw==">OneTouch Stop</Option>
+					<Option value="AAAAAgAAABoAAABlAw==">OneTouch View</Option>
+					<Option value="AAAAAgAAAJcAAAA2Aw==">Options</Option>
+					<Option value="AAAAAgAAAKQAAAB3Aw==">PAP</Option>
+					<Option value="AAAAAgAAAJcAAAAZAw==">Pause</Option>
+					<Option value="AAAAAgAAABoAAABVAw==">Photo Frame / AppliCast</Option>
+					<Option value="AAAAAQAAAAEAAAA+Aw==">Pic Off</Option>
+					<Option value="AAAAAgAAAJcAAAAaAw==">Play</Option>
+					<Option value="AAAAAgAAABoAAABhAw==">Popup Menu</Option>
+					<Option value="AAAAAgAAAJcAAAA8Aw==">Previous</Option>
+					<Option value="AAAAAgAAAJcAAAAWAw==">Program Description</Option>
+					<Option value="AAAAAgAAAHcAAABqAw==">Rakuraku Start</Option>
+					<Option value="AAAAAgAAAJcAAAAgAw==">Record</Option>
+					<Option value="AAAAAgAAAJcAAAAlAw==">Red</Option>
+					<Option value="AAAAAgAAAJcAAAAjAw==">Return</Option>
+					<Option value="AAAAAgAAAJcAAAAbAw==">Rewind</Option>
+					<Option value="AAAAAQAAAAEAAAAzAw==">Right Arrow</Option>
+					<Option value="AAAAAgAAABoAAAB4Aw==">Scene Select</Option>
+					<Option value="AAAAAgAAABoAAAB9Aw==">SEN</Option>
+					<Option value="AAAAAgAAABoAAAB0Aw==">Social</Option>
+					<Option value="AAAAAgAAAJcAAAAYAw==">Stop / Digital (Mode Dependent)</Option>
+					<Option value="AAAAAgAAAJcAAAAoAw==">Subtitle</Option>
+					<Option value="AAAAAgAAABoAAABYAw==">Sync Menu / acTVila</Option>
+					<Option value="AAAAAQAAAAEAAAA/Aw==">Teletext</Option>
+					<Option value="AAAAAgAAAHcAAABgAw==">Theater</Option>
+					<Option value="AAAAAgAAABoAAABgAw==">Top Menu</Option>
+					<Option value="AAAAAgAAABoAAAB+Aw==">Track ID</Option>
+					<Option value="AAAAAgAAABoAAABnAw==">TV Pause</Option>
+					<Option value="AAAAAgAAABoAAABXAw==">TV Radio</Option>
+					<Option value="AAAAAQAAAAEAAAAkAw==">TV Tuner</Option>
+					<Option value="AAAAAQAAAAEAAAB0Aw==">Up Arrow</Option>
+					<Option value="AAAAAQAAAAEAAABAAw==">Video 1</Option>
+					<Option value="AAAAAQAAAAEAAABBAw==">Video 2</Option>
+					<Option value="AAAAAQAAAAEAAABCAw==">Video 3</Option>
+					<Option value="AAAAAQAAAAEAAABHAw==">Video 4</Option>
+					<Option value="AAAAAQAAAAEAAABIAw==">Video 5</Option>
+					<Option value="AAAAAQAAAAEAAAATAw==">Volume Down</Option>
+					<Option value="AAAAAQAAAAEAAAASAw==">Volume Up</Option>
+					<Option value="AAAAAgAAAKQAAAA9Aw==">Wide Mode (Toggle)</Option>
+					<Option value="AAAAAgAAAHcAAABsAw==">Write Chapter</Option>
+					<Option value="AAAAAgAAAJcAAAAnAw==">Yellow</Option>
+					<Option value="AAAAAgAAAKQAAAAyAw==">Zoom/Wide Zoom Toggle</Option>
+				</List>
+			</Field>
+		</ConfigUI>
+	</Action>
+</Actions>
