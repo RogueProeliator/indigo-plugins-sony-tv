@@ -28,6 +28,9 @@
 #		Added queryPath property and support pulling it from the device UPnP description
 #	Version 2.0.14:
 #		Added event for update available
+#	Version 2.2.17:
+#		Upgraded to latest framework
+#		Added Power On remote IR command
 #
 #/////////////////////////////////////////////////////////////////////////////////////////
 #/////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +71,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
 		# RP framework base class's init method
-		super(Plugin, self).__init__(pluginId, pluginDisplayName, pluginVersion, pluginPrefs, "http://www.duncanware.com/Downloads/IndigoHomeAutomation/Plugins/SonyBraviaNetworkRemote/SonyBraviaNetworkRemoteVersionInfo.html", managedDeviceClassModule=sonyTvNetworkRemoteDevice)
+		super(Plugin, self).__init__(pluginId, pluginDisplayName, pluginVersion, pluginPrefs, u'http://www.duncanware.com/Downloads/IndigoHomeAutomation/Plugins/SonyBraviaNetworkRemote/SonyBraviaNetworkRemoteVersionInfo.html', managedDeviceClassModule=sonyTvNetworkRemoteDevice)
 		
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	# This routine is called to parse out a uPNP search results list in order to createDeviceObject
@@ -80,16 +83,16 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 			deviceIdx = 0
 			for networkDevice in deviceList:
 				try:
-					self.logDebugMessage("Found uPnP Device: " + str(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logDebugMessage(u'Found uPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
 				
 					locationREMatch = re.match(r'http://([\d\.]*)\:{0,1}(\d+)', networkDevice.location, re.I)
 					ipAddress = locationREMatch.group(1) + ":" + locationREMatch.group(2)
 					try:
-						nameIndex = [x[0] for x in networkDevice.allHeaders].index("x-av-physical-unit-info")
+						nameIndex = [x[0] for x in networkDevice.allHeaders].index(u'x-av-physical-unit-info')
 						displayName = re.match(r'^pa=\"(BRAVIA KDL\-[\w]+)\";$', networkDevice.allHeaders[nameIndex][1], re.I).group(1)
 					except ValueError:
 						# this is not a Bravia device as the list index was
-						displayName = ""
+						displayName = u''
 						pass
 					except:	
 						if self.debugLevel == RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH:
@@ -97,12 +100,12 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 						displayName = ipAddress
 				
 					# only add to the menu items if a display name is set
-					if displayName != "":
-						menuItems.append(("IDX" + str(deviceIdx), displayName))
+					if displayName != u'':
+						menuItems.append((u'IDX' + RPFramework.RPFrameworkUtils.to_unicode(deviceIdx), displayName))
 					
 					deviceIdx += 1
 				except:
-					self.logDebugMessage("Skipped previous UPnP device due to parsing error" + str(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logDebugMessage(u'Skipped previous UPnP device due to parsing error' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
 				
 			return menuItems
 		except:
@@ -117,67 +120,67 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 		# for our purposes, the value of the selection will be the index into the UPnP list
 		# cached for the plugin
 		try:
-			self.logDebugMessage("Selected Device Index: " + valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, "upnpEnumeratedDevices")][3:], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
-			deviceSelected = self.enumeratedDevices[int(valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, "upnpEnumeratedDevices")][3:])]
-			self.logDebugMessage("Found UPnP Device: " + str(deviceSelected), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			self.logDebugMessage(u'Selected Device Index: ' + valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, u'upnpEnumeratedDevices')][3:], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			deviceSelected = self.enumeratedDevices[int(valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, u'upnpEnumeratedDevices')][3:])]
+			self.logDebugMessage(u'Found UPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 			
 			# we need to pull down the XML descriptor and see if we can find the IRCC service
 			# to which we will send commands... because this is not directly the service!
-			self.logDebugMessage("Downloading XML Descriptor: " + deviceSelected.location, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+			self.logDebugMessage(u'Downloading XML Descriptor: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected.location), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
 			response = urllib2.urlopen(deviceSelected.location)
 			html = response.read()
-			html = re.sub("\<root xmlns=\"[^\"]+\"", "<root", html)
+			html = re.sub(u"\<root xmlns=\"[^\"]+\"", "<root", html)
 			
 			try:
-				self.logDebugMessage("Downloaded XML Descriptor: " + html, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logDebugMessage(u'Downloaded XML Descriptor: ' + html, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 			
 				# parse the descriptor as an XML document
 				upnpInfoXml = xml.etree.ElementTree.fromstring(html)
-				self.logDebugMessage("Successfully parsed XML descriptor", RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
-				self.logDebugMessage("Root Node: " + upnpInfoXml.tag, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logDebugMessage(u'Successfully parsed XML descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logDebugMessage(u'Root Node: ' + upnpInfoXml.tag, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 			
 				# search the XML document to see if we can find the IRCC command service
 				deviceNode = upnpInfoXml.find("device")
 				if deviceNode == None:
-					self.logDebugMessage("No 'device' node found in UPnP XML service descriptor", RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+					self.logDebugMessage(u'No "device" node found in UPnP XML service descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 				else:
 					serviceList = deviceNode.find("serviceList")
 					if serviceList == None:
-						self.logDebugMessage("No 'serviceList' node found in UPnP XML service descriptor", RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+						self.logDebugMessage(u'No "serviceList" node found in UPnP XML service descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 					else:
 						allServices = serviceList.findall("service")
 						for serviceNode in allServices:
 							serviceType = serviceNode.find("serviceType").text
-							if serviceType == "urn:schemas-sony-com:service:IRCC:1":
+							if serviceType == u'urn:schemas-sony-com:service:IRCC:1':
 								# found the service... pull the URL required so that we can determine the Port
 								controlURLMatch = re.match(r'http://([\d\.]*)(\:(\d*)){0,1}(/.*)$', serviceNode.find("controlURL").text, re.I)
-								valuesDict["httpAddress"] = controlURLMatch.group(1)
+								valuesDict[u'httpAddress'] = controlURLMatch.group(1)
 								if controlURLMatch.group(3) != None:
-									valuesDict["httpPort"] = controlURLMatch.group(3)
+									valuesDict[u'httpPort'] = controlURLMatch.group(3)
 								else:
-									valuesDict["httpPort"] = "80"
-								valuesDict["queryPath"] = controlURLMatch.group(4)
-								valuesDict["validationMsgControl"] = "99"
+									valuesDict[u'httpPort'] = u'80'
+								valuesDict[u'queryPath'] = controlURLMatch.group(4)
+								valuesDict[u'validationMsgControl'] = u'99'
 								return valuesDict
 			except:
 				self.exceptionLog()
 			
 			# if we made it this far we need to set the device via the location (only) and ignore the service...
-			valuesDict["validationMsgControl"] = "2"
+			valuesDict[u'validationMsgControl'] = u'2'
 			locationURLMatch = re.match(r'http://([\d\.]*)(\:(\d*)){0,1}', deviceSelected.location, re.I)
-			valuesDict["httpAddress"] = locationURLMatch.group(1)
+			valuesDict[u'httpAddress'] = locationURLMatch.group(1)
 			if locationURLMatch.group(3) == None:
-				valuesDict["httpPort"] = "80"
+				valuesDict[u'httpPort'] = u'80'
 			else:
-				valuesDict["httpPort"] = locationURLMatch.group(3)
+				valuesDict[u'httpPort'] = locationURLMatch.group(3)
 			return valuesDict
 		except:
 			self.exceptionLog()
 		
 		# an error occurred if we made it here... 
-		valuesDict["validationMsgControl"] = "1"
-		valuesDict["httpAddress"] = ""
-		valuesDict["httpPort"] = ""
+		valuesDict[u'validationMsgControl'] = u'1'
+		valuesDict[u'httpAddress'] = u''
+		valuesDict[u'httpPort'] = u''
 		return valuesDict
 			
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -185,10 +188,10 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	# network (based on its IP address)
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	
 	def readMACAddress(self, valuesDict, typeId, devId):
-		self.logDebugMessage("User requested an attempt to read MAC address of device", RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
-		ipAddress = valuesDict["httpAddress"]
+		self.logDebugMessage(u'User requested an attempt to read MAC address of device', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+		ipAddress = valuesDict[u'httpAddress']
 		if ipAddress is None or ipAddress == "":
-			valuesDict["macAddress"] = ":: invalid IP ::"
+			valuesDict[u'macAddress'] = u':: invalid IP ::'
 			return valuesDict
 		else:
 			try:
@@ -198,18 +201,18 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 
 				# attempt to read the arp cache...
 				arpResults = subprocess.Popen(["/usr/sbin/arp", "-n", ipAddress], stdout=subprocess.PIPE).communicate()[0]
-				self.logDebugMessage("ARP cache output: " + arpResults, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logDebugMessage(u'ARP cache output: ' + arpResults, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
 				deviceMacParser = re.search(r'(([a-f\d]{1,2}\:){5}[a-f\d]{1,2})', arpResults, re.I)
 				if deviceMacParser is None:
-					valuesDict["macAddress"] = ":: device not found ::"
+					valuesDict[u'macAddress'] = u':: device not found ::'
 					return valuesDict
 				else:
-					self.logDebugMessage("ARP parse: " + str(deviceMacParser.groups()), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
-					valuesDict["macAddress"] = deviceMacParser.group(0)
-					self.logDebugMessage("MAC value found: " + valuesDict["macAddress"], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logDebugMessage(u'ARP parse: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceMacParser.groups()), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+					valuesDict[u'macAddress'] = deviceMacParser.group(0)
+					self.logDebugMessage(u'MAC value found: ' + valuesDict[u'macAddress'], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
 					return valuesDict
 			except:
-				valuesDict["macAddress"] = ":: error ::"
+				valuesDict[u'macAddress'] = u':: error ::'
 				return valuesDict
 	
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	
@@ -218,14 +221,14 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	
 	def pairToDevice(self, valuesDict, typeId):
 		# we need to be sure that a device was selected from the list
-		deviceId = int(valuesDict.get("targetDevice", "0"))
+		deviceId = int(valuesDict.get(u'targetDevice', u'0'))
 		if deviceId == 0:
 			# no device was selected
 			return valuesDict
 		else:
 			# we have the ID of the device and hopefully it is setup...
 			rpDevice = self.managedDevices[deviceId]
-			pinCode = valuesDict.get("devicePIN", "")
+			pinCode = valuesDict.get(u'devicePIN', u'')
 			
 			# if no PIN has been entered then we attempt a direct authentication w/o PIN (it may already be
 			# associated, if so then this should tell us... won't hurt anything
@@ -236,20 +239,20 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 				# next processing depends upon the results... we must 
 				if authorizeResults == sonyTvNetworkRemoteDevice.AUTH_REQUEST_RESULT_DONE:
 					# things are already registered or don't need to be paired...
-					valuesDict["registrationMsgControl"] = "99"
+					valuesDict[u'registrationMsgControl'] = u'99'
 					return valuesDict
 				elif authorizeResults == sonyTvNetworkRemoteDevice.AUTH_REQUEST_RESULT_PAIRREQUIRED:
 					# the service was hit but a pairing is required to complete the process (pairing
 					# via PIN entry)
-					valuesDict["registrationMsgControl"] = "5"
+					valuesDict[u'registrationMsgControl'] = u'5'
 					return valuesDict
 				else:
 					# an unknown error occurred... show a different error depending upon the debug
 					# status
 					if self.debug == True:
-						valuesDict["registrationMsgControl"] = "1"
+						valuesDict[u'registrationMsgControl'] = u'1'
 					else:
-						valuesDict["registrationMsgControl"] = "2"
+						valuesDict[u'registrationMsgControl'] = u'2'
 					return valuesDict
 					
 			else:
@@ -260,20 +263,20 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 				# next processing depends upon the results...
 				if authorizeResults == sonyTvNetworkRemoteDevice.AUTH_REQUEST_RESULT_DONE:
 					# we paired up successfully!
-					valuesDict["registrationMsgControl"] = "99"
+					valuesDict[u'registrationMsgControl'] = u'99'
 					return valuesDict
 				elif authorizeResults == sonyTvNetworkRemoteDevice.AUTH_REQUEST_RESULT_PAIRREQUIRED:
 					# the service was hit but the pairing not accepted... maybe bad PIN number or
 					# something else went wrong...
-					valuesDict["registrationMsgControl"] = "6"
+					valuesDict[u'registrationMsgControl'] = u'6'
 					return valuesDict
 				else:
 					# an unknown error occurred... show a different error depending upon the debug
 					# status
 					if self.debug == True:
-						valuesDict["registrationMsgControl"] = "1"
+						valuesDict[u'registrationMsgControl'] = u'1'
 					else:
-						valuesDict["registrationMsgControl"] = "2"
+						valuesDict[u'registrationMsgControl'] = u'2'
 					return valuesDict
 					
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	
@@ -283,16 +286,16 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	def retrieveIRCodesFromDevice(self, valuesDict, typeId):
 		try:
 			# we need to be sure that a device was selected from the list
-			deviceId = valuesDict.get("targetDevice", "0")
-			if deviceId == "" or deviceId == "0":
+			deviceId = valuesDict.get(u'targetDevice', u'0')
+			if deviceId == u'' or deviceId == u'0':
 				# no device was selected
 				errorDict = indigo.Dict()
-				errorDict["targetDevice"] = "Please select a device"
+				errorDict[u'targetDevice'] = u'Please select a device'
 				return (False, valuesDict, errorDict)
 			else:
 				# we have the ID of the device and hopefully it is setup...
 				# queue the command up as a RESTful post to the specified location
-				self.executeAction(None, indigoActionId="downloadRemoteCommands", indigoDeviceId=int(deviceId), paramValues=indigo.Dict())
+				self.executeAction(None, indigoActionId=u'downloadRemoteCommands', indigoDeviceId=int(deviceId), paramValues=indigo.Dict())
 		except:
 			self.exceptionLog()
 			return (False, valuesDict)
@@ -305,25 +308,26 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	def sendArbitraryIRCode(self, valuesDict, typeId):
 		try:
 			# validate that the IR code entered was valid
-			deviceId = valuesDict.get("targetDevice", "0")
+			deviceId = valuesDict.get(u'targetDevice', u'0')
 			irPattern = re.compile("^[a-zA-Z\d/+]{18}==$")
-			irCode = valuesDict.get("irCodeToSend", "").strip()
+			irCode = valuesDict.get(u'irCodeToSend', u'').strip()
 		
-			if deviceId == "" or deviceId == "0":
+			if deviceId == u'' or deviceId == u'0':
 				# no device was selected
 				errorDict = indigo.Dict()
-				errorDict["targetDevice"] = "Please select a device"
+				errorDict[u'targetDevice'] = u'Please select a device'
 				return (False, valuesDict, errorDict)
 			elif irPattern.match(irCode) == None:
 				errorDict = indigo.Dict()
-				errorDict["irCodeToSend"] = "Invalid IR Code Format"
+				errorDict[u'irCodeToSend'] = u'Invalid IR Code Format'
 				return (False, valuesDict, errorDict)
 			else:
 				# send the code using the normal action processing...
 				actionParams = indigo.Dict()
-				actionParams["buttonSelect"] = irCode.strip()
-				self.executeAction(None, indigoActionId="sendRemoteButton", indigoDeviceId=int(deviceId), paramValues=actionParams)
+				actionParams[u'buttonSelect'] = irCode.strip()
+				self.executeAction(None, indigoActionId=u'sendRemoteButton', indigoDeviceId=int(deviceId), paramValues=actionParams)
 				return (True, valuesDict)
 		except:
 			self.exceptionLog()
 			return (False, valuesDict)	
+			
