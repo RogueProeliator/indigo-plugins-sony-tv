@@ -15,11 +15,11 @@ The auto-discovery feature requires that the Sony device and Indigo server be on
 The latest released version of the plugin is available for download in the Releases section... those versions in beta will be marked as a Pre-Release and will not appear in update notifications.
 
 ###Configuring the Plugin
-Upon first installation you will be asked to configure the plugin; please see the instructions on the configuration screen for more information. Most users will be fine with the defaults unless an email is desired when a new version is released.
+Upon first installation you will be asked to configure the plugin; please see the instructions on the configuration screen for more information. Most users will be fine with the defaults unless an email is desired when a new version is released.<br />
 ![](<Documentation/Doc-Images/PluginConfigDialog.png>)
 
 #Plugin Devices
-When creating a device, in the Device Settings you will need to select from the list of supported devices found on the network or else manually enter your devices's IP address. Note that if you ever lose connection with your device, you may need to return here to find/enter the IP Address again if it has picked up a new address on the network. Please read the additional instructions on the configuration dialog as you may need to fill out additional information to get full control of your device:
+When creating a device, in the Device Settings you will need to select from the list of supported devices found on the network or else manually enter your devices's IP address. Note that if you ever lose connection with your device, you may need to return here to find/enter the IP Address again if it has picked up a new address on the network. Please read the additional instructions on the configuration dialog as you may need to fill out additional information to get full control of your device:<br />
 ![](<Documentation/Doc-Images/DeviceConfigDialog.png>)
 
 #Available Actions
