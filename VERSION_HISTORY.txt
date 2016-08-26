@@ -6,6 +6,9 @@ To update to the latest version of the application, please download the latest r
 =================================
 VERSION HISTORY
 =================================
+Version 2.3.1 [August 2016]:
+* Fixed issue running the plugin under Python 2.7
+
 Version 2.3.0 [August 2016]:
 * Migrated updater to GitHub
 * Improved auto-repairing for some Sony models (when the pair had timed out)
