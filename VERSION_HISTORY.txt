@@ -6,6 +6,10 @@ To update to the latest version of the application, please download the latest r
 =================================
 VERSION HISTORY
 =================================
+Version 2.4.0 [January 2017]:
+* Updates to take advantage of Indigo 7 changes
+* More fixes for Python 2.7
+
 Version 2.3.1 [August 2016]:
 * Fixed issue running the plugin under Python 2.7
 
