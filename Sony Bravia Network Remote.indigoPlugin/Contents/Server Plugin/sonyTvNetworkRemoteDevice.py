@@ -84,7 +84,7 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	def handleUnmanagedCommandInQueue(self, deviceHTTPAddress, rpCommand):
 		if rpCommand.commandName == CMD_AUTHENTICATE_TO_DEVICE or rpCommand.commandName == CMD_PAIR_TO_DEVICE:
-			self.hostPlugin.logDebugMessage(u'Received an authentication command, attempting connection', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			self.hostPlugin.logger.threaddebug(u'Received an authentication command, attempting connection')
 			try:
 				# this command requires that we formulate a registration request and send it
 				# to the device, trapping the cookie returned (if successful)
@@ -93,9 +93,9 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 				conn.connect()
 				
 				registerJSONTemplate = '{"id":13, "method":"actRegister", "version":"1.0", "params": [{"clientid":"DuncanwareRemote:' + PLUGIN_PAIRING_AUTH_CODE +'", "nickname":"DuncanwareRemote (IndigoPlugin)"}, [{"clientid":"DuncanwareRemote:' + PLUGIN_PAIRING_AUTH_CODE + '", "value":"yes", "nickname":"DuncanwareRemote (IndigoPlugin)", "function":"WOL"}]]}'
-				self.hostPlugin.logDebugMessage("Sending Auth Request: " + registerJSONTemplate, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.hostPlugin.logger.threaddebug("Sending Auth Request: " + registerJSONTemplate)
 				if rpCommand.commandName == CMD_PAIR_TO_DEVICE:
-					self.hostPlugin.logDebugMessage("Including Pair PIN: " + rpCommand.commandPayload, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+					self.hostPlugin.logger.threaddebug("Including Pair PIN: " + rpCommand.commandPayload)
 				
 				conn.putrequest("POST", "/sony/accessControl")
 				conn.putheader("content-type", "application/json")
@@ -111,12 +111,12 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 				
 				# if the response is 200 then we are paired or not required to pair... we should have a cookie
 				# returned; if not then throw an error as it must be paired for use
-				self.hostPlugin.logDebugMessage(u'Response to Auth Request: [' + RPFramework.RPFrameworkUtils.to_unicode(responseToRegister.status) + u'] ' + RPFramework.RPFrameworkUtils.to_unicode(responseToRegister.getheaders()) + u'\n\n' + responseToRegister.read(), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.hostPlugin.logger.threaddebug(u'Response to Auth Request: [' + RPFramework.RPFrameworkUtils.to_unicode(responseToRegister.status) + u'] ' + RPFramework.RPFrameworkUtils.to_unicode(responseToRegister.getheaders()) + u'\n\n' + responseToRegister.read())
 				if responseToRegister.status == 200:
 					# retrieve the authentication cookie from the headers
 					cookieParser = re.compile(ur'(auth=[a-zA-Z\d]+);', re.MULTILINE | re.IGNORECASE)
 					authCookie = re.search(cookieParser, responseToRegister.getheader("set-cookie")).group(1)
-					self.hostPlugin.logDebugMessage(u'Obtained Auth Cookie: ' + authCookie, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.hostPlugin.logger.debug(u'Obtained Auth Cookie: ' + authCookie)
 					
 					# update the device property with the auth cookie
 					deviceProps = self.indigoDevice.pluginProps
@@ -133,19 +133,18 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 				elif responseToRegister.status == 401:
 					# the user must pair the plugin to the Sony device before it will allow us to
 					# register for an auth cookie
-					indigo.server.log(u'This device (' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u') must be paired in order for the plugin to act as a remote.', isError=True)
+					self.hostPlugin.logger.error(u'This device (' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u') must be paired in order for the plugin to act as a remote.')
 					return AUTH_REQUEST_RESULT_PAIRREQUIRED
 				else:
 					# this is an unknown error (no registration service exists??) throw an error in the log
 					# and disregard the previous commandName
-					indigo.server.log(u'Error authenticating device: ' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u' - the plugin is not able to act as a remote until this is corrected; turn on debug for more details.', isError=True)
+					self.hostPlugin.logger.error(u'Error authenticating device: ' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u' - the plugin is not able to act as a remote until this is corrected; turn on debug for more details.')
 					return AUTH_REQUEST_RESULT_ERROR
 			except:
 				# this is an unknown error (no registration service exists??) throw an error in the log
 				# and disregard the previous commandName
-				indigo.server.log(u'Error authenticating device: ' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u' - the plugin is not able to act as a remote until this is corrected; turn on debug for more details.', isError=True)
-				if self.hostPlugin.debug == True:
-					self.hostPlugin.exceptionLog()
+				self.hostPlugin.logger.error(u'Error authenticating device: ' + RPFramework.RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u' - the plugin is not able to act as a remote until this is corrected; turn on debug for more details.')
+				self.hostPlugin.logger.exception(u'Authentication error')
 				return AUTH_REQUEST_RESULT_ERROR
 				
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -156,10 +155,10 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 		if response is None:
 			super(SonyTvNetworkRemoteDevice, self).handleRESTfulError(rpCommand, err, response)
 		elif response.status_code == 401 or response.status_code == 403 or (response.status_code == 500 and response.text.find(u'<errorDescription>Action not authorized</errorDescription>') > 0):
-			self.hostPlugin.logDebugMessage(u'Received an authentication request, attempting now...', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_LOW)
+			self.hostPlugin.logger.info(u'Received an authentication request, attempting now...')
 			self.commandQueue.put(RPFrameworkCommand.RPFrameworkCommand(CMD_AUTHENTICATE_TO_DEVICE, commandPayload=rpCommand.commandPayload))
 		elif response.status_code == 404:
-			indigo.server.log(u'Error executing command: Page Not Found on Device', isError=True)
+			self.hostPlugin.logger.error(u'Error executing command: Page Not Found on Device')
 		else:
 			super(SonyTvNetworkRemoteDevice, self).handleRESTfulError(rpCommand, err, response)
 			
@@ -175,7 +174,7 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 		try:
 			# the response should be a JSON-formatted page; if not then the request was
 			# definitely unsuccessful
-			self.hostPlugin.logDebugMessage(u'Received IR Commands List: ' + RPFramework.RPFrameworkUtils.to_unicode(responseObj), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			self.hostPlugin.logger.threaddebug(u'Received IR Commands List: ' + RPFramework.RPFrameworkUtils.to_unicode(responseObj))
 			remoteCommands = simplejson.loads(responseObj)
 			
 			# create the header for the report...
@@ -199,13 +198,12 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 			irCodesHtml += u'</table>'
 			
 			# write out the file...
-			self.hostPlugin.logDebugMessage(u'Writing IR Command List HTML to file', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+			self.hostPlugin.logger.debug(u'Writing IR Command List HTML to file')
 			outputFilename = self.hostPlugin.writePluginReport("Sony Device IR Commands Report", reportHeaders, irCodesHtml, "tmpIRCodeDownloadResults.html")
 			
 			# launch the file in a browser window via the command line
 			call(["open", outputFilename])
-			indigo.server.log(u'Created IR codes download results temporary file at ' + outputFilename);
+			self.hostPlugin.logger.info(u'Created IR codes download results temporary file at ' + outputFilename);
 		except:
-			indigo.server.log(u'IR Command List Failed:', isError=True)
-			self.hostPlugin.exceptionLog()
+			self.hostPlugin.exception(u'IR Command List Failed:')
 			

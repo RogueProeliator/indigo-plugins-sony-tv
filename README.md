@@ -3,6 +3,8 @@ This Indigo 6.0+ plugin allows Indigo to act as a remote control for select netw
 
 Currently this plugin is loaded with the necessary remote commands to control Sony televisions; however, if anyone has alternate Sony devices supporting IP control (e.g. some recent Blu-Ray players) then it should be trivial to add support for those device types.
 
+_**INDIGO 6 IMPORTANT NOTE:**_ The Indigo 6 version of this plugin is end-of-life with respect to new development, however the latest stable version on Indigo 6 is [still available](https://github.com/RogueProeliator/IndigoPlugins-Sony-Network-Remote/archive/v2.3.1.zip) and is working as expected at the moment. Please consider an upgrade to Indigo 7 to support further development of our favorite HA platform!
+
 #Hardware Requirements
 This plugin should work with any supported Sony device type as the remote commands do not change much between individual device models; some models may not support all commands provided by the plugin (e.g. Netflix & Picture-in-Picture commands). Also note that turning ON the device is only supported on those Sony models that support Wake-On-LAN (WOL). This includes many/most 2013 models supporting IP commands and some limited previous year models.
 

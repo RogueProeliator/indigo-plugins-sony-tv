@@ -83,7 +83,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 			deviceIdx = 0
 			for networkDevice in deviceList:
 				try:
-					self.logDebugMessage(u'Found uPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logger.debug(u'Found uPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice))
 				
 					locationREMatch = re.match(r'http://([\d\.]*)\:{0,1}(\d+)', networkDevice.location, re.I)
 					ipAddress = locationREMatch.group(1) + ":" + locationREMatch.group(2)
@@ -95,8 +95,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 						displayName = u''
 						pass
 					except:	
-						if self.debugLevel == RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH:
-							self.exceptionLog()
+						self.logger.exception(u'Error parsing uPnp results')
 						displayName = ipAddress
 				
 					# only add to the menu items if a display name is set
@@ -105,7 +104,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 					
 					deviceIdx += 1
 				except:
-					self.logDebugMessage(u'Skipped previous UPnP device due to parsing error' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logger.debug(u'Skipped previous UPnP device due to parsing error' + RPFramework.RPFrameworkUtils.to_unicode(networkDevice))
 				
 			return menuItems
 		except:
@@ -120,33 +119,33 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 		# for our purposes, the value of the selection will be the index into the UPnP list
 		# cached for the plugin
 		try:
-			self.logDebugMessage(u'Selected Device Index: ' + valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, u'upnpEnumeratedDevices')][3:], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			self.logger.threaddebug(u'Selected Device Index: ' + valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, u'upnpEnumeratedDevices')][3:])
 			deviceSelected = self.enumeratedDevices[int(valuesDict[self.getGUIConfigValue(typeId, RPFramework.RPFrameworkPlugin.GUI_CONFIG_UPNP_ENUMDEVICESFIELDID, u'upnpEnumeratedDevices')][3:])]
-			self.logDebugMessage(u'Found UPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+			self.logger.threaddebug(u'Found UPnP Device: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected))
 			
 			# we need to pull down the XML descriptor and see if we can find the IRCC service
 			# to which we will send commands... because this is not directly the service!
-			self.logDebugMessage(u'Downloading XML Descriptor: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected.location), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+			self.logger.debug(u'Downloading XML Descriptor: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceSelected.location))
 			response = urllib2.urlopen(deviceSelected.location)
 			html = response.read()
 			html = re.sub(u"\<root xmlns=\"[^\"]+\"", "<root", html)
 			
 			try:
-				self.logDebugMessage(u'Downloaded XML Descriptor: ' + html, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logger.threaddebug(u'Downloaded XML Descriptor: ' + html)
 			
 				# parse the descriptor as an XML document
 				upnpInfoXml = xml.etree.ElementTree.fromstring(html)
-				self.logDebugMessage(u'Successfully parsed XML descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
-				self.logDebugMessage(u'Root Node: ' + upnpInfoXml.tag, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logger.threaddebug(u'Successfully parsed XML descriptor')
+				self.logger.threaddebug(u'Root Node: ' + upnpInfoXml.tag)
 			
 				# search the XML document to see if we can find the IRCC command service
 				deviceNode = upnpInfoXml.find("device")
 				if deviceNode == None:
-					self.logDebugMessage(u'No "device" node found in UPnP XML service descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+					self.logger.threaddebug(u'No "device" node found in UPnP XML service descriptor')
 				else:
 					serviceList = deviceNode.find("serviceList")
 					if serviceList == None:
-						self.logDebugMessage(u'No "serviceList" node found in UPnP XML service descriptor', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+						self.logger.threaddebug(u'No "serviceList" node found in UPnP XML service descriptor')
 					else:
 						allServices = serviceList.findall("service")
 						for serviceNode in allServices:
@@ -163,7 +162,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 								valuesDict[u'validationMsgControl'] = u'99'
 								return valuesDict
 			except:
-				self.exceptionLog()
+				self.logger.exception(u'Error selecting uPnP device')
 			
 			# if we made it this far we need to set the device via the location (only) and ignore the service...
 			valuesDict[u'validationMsgControl'] = u'2'
@@ -175,7 +174,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 				valuesDict[u'httpPort'] = locationURLMatch.group(3)
 			return valuesDict
 		except:
-			self.exceptionLog()
+			self.logger.exception(u'Error selecting uPnP device')
 		
 		# an error occurred if we made it here... 
 		valuesDict[u'validationMsgControl'] = u'1'
@@ -188,7 +187,7 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 	# network (based on its IP address)
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	
 	def readMACAddress(self, valuesDict, typeId, devId):
-		self.logDebugMessage(u'User requested an attempt to read MAC address of device', RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+		self.logger.debug(u'User requested an attempt to read MAC address of device')
 		ipAddress = valuesDict[u'httpAddress']
 		if ipAddress is None or ipAddress == "":
 			valuesDict[u'macAddress'] = u':: invalid IP ::'
@@ -197,19 +196,19 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 			try:
 				# the device must be pinged in order to get its IP address into the ARP cache table
 				output = subprocess.Popen(["/sbin/ping", "-c2", "-t2", ipAddress],stdout = subprocess.PIPE).communicate()[0]
-				self.logDebugMessage("Ping output: " + output, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logger.threaddebug("Ping output: " + output)
 
 				# attempt to read the arp cache...
 				arpResults = subprocess.Popen(["/usr/sbin/arp", "-n", ipAddress], stdout=subprocess.PIPE).communicate()[0]
-				self.logDebugMessage(u'ARP cache output: ' + arpResults, RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+				self.logger.threaddebug(u'ARP cache output: ' + arpResults)
 				deviceMacParser = re.search(r'(([a-f\d]{1,2}\:){5}[a-f\d]{1,2})', arpResults, re.I)
 				if deviceMacParser is None:
 					valuesDict[u'macAddress'] = u':: device not found ::'
 					return valuesDict
 				else:
-					self.logDebugMessage(u'ARP parse: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceMacParser.groups()), RPFramework.RPFrameworkPlugin.DEBUGLEVEL_HIGH)
+					self.logger.threaddebug(u'ARP parse: ' + RPFramework.RPFrameworkUtils.to_unicode(deviceMacParser.groups()))
 					valuesDict[u'macAddress'] = deviceMacParser.group(0)
-					self.logDebugMessage(u'MAC value found: ' + valuesDict[u'macAddress'], RPFramework.RPFrameworkPlugin.DEBUGLEVEL_MED)
+					self.logger.debug(u'MAC value found: ' + valuesDict[u'macAddress'])
 					return valuesDict
 			except:
 				valuesDict[u'macAddress'] = u':: error ::'
