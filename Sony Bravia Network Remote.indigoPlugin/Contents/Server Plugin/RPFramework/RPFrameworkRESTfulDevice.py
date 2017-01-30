@@ -46,6 +46,9 @@
 #		Added requests' response object to the restful error call
 #		Changed error logging to the new plugin-based logErrorMessage routine
 #		Implemented POST operation via Requests
+#	[January 2017]:
+#		Added response body to default error handler (debug level)
+#		Added threaddebug level logging of headers to the SOAP request
 #
 #/////////////////////////////////////////////////////////////////////////////////////////
 #/////////////////////////////////////////////////////////////////////////////////////////
@@ -293,6 +296,10 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 														self.hostPlugin.logger.debug(saveLocation + u' resized via sip shell command')
 													except:
 														self.hostPlugin.logger.error(u'Error resizing image via sips')
+														
+											# we have completed the download and processing successfully... allow the
+											# device (or its descendants) to process successful operations
+											self.notifySuccessfulDownload(command, saveLocation)
 										finally:
 											if not localFile is None:
 												localFile.close()					
@@ -338,6 +345,7 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 							
 							# execute the URL post to the web service
 							self.hostPlugin.logger.threaddebug(u'Sending SOAP/JSON request:\n' + RPFrameworkUtils.to_str(soapBody))
+							self.hostPlugin.logger.threaddebug(u'Using headers: \n' + RPFrameworkUtils.to_str(customHeaders))
 							responseObj = requests.post(fullGetUrl, headers=customHeaders, verify=False, data=RPFrameworkUtils.to_str(soapBody))
 							
 							if responseObj.status_code == 200:
@@ -438,5 +446,15 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 		if rpCommand.commandName == CMD_RESTFUL_PUT or rpCommand.commandName == CMD_RESTFUL_GET:
 			self.hostPlugin.logger.error(u'An error occurred executing the GET/PUT request (Device: ' + RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u'): ' + RPFrameworkUtils.to_unicode(err))
 		else:
-			self.hostPlugin.logger.error(u'An error occurred processing the SOAP/JSON POST request: (Device: ' + RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u'): ' + RPFrameworkUtils.to_unicode(err))		
+			self.hostPlugin.logger.error(u'An error occurred processing the SOAP/JSON POST request: (Device: ' + RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u'): ' + RPFrameworkUtils.to_unicode(err))
+			
+		if response is not None:
+			self.hostPlugin.logger.debug(RPFrameworkUtils.to_unicode(responseObj.text))
+			
+	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	# This routine will handle notification to the device whenever a file was successfully
+	# downloaded via a DOWNLOAD_FILE or DOWNLOAD_IMAGE command
+	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	def notifySuccessfulDownload(self, rpCommand, outputFileName):
+		pass
 	

@@ -91,9 +91,12 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 						nameIndex = [x[0] for x in networkDevice.allHeaders].index(u'x-av-physical-unit-info')
 						displayName = re.match(r'^pa=\"(BRAVIA KDL\-[\w]+)\";$', networkDevice.allHeaders[nameIndex][1], re.I).group(1)
 					except ValueError:
-						# this is not a Bravia device as the list index was
+						# this is not a Bravia TV device as the list index was not matched; it still could be controllable and
+						# the model just be not presented...
 						displayName = u''
-						pass
+						
+						if networkDevice.usn.startswith(u'schemas-sony-com:service:ScalarWebAPI') or networkDevice.usn.startswith(u'schemas-sony-com:service:IRCC'):
+							displayName = ipAddress
 					except:	
 						self.logger.exception(u'Error parsing uPnp results')
 						displayName = ipAddress
