@@ -92,15 +92,17 @@ class Plugin(RPFramework.RPFrameworkPlugin.RPFrameworkPlugin):
 						displayName = re.match(r'^pa=\"(BRAVIA KDL\-[\w]+)\";$', networkDevice.allHeaders[nameIndex][1], re.I).group(1)
 					except ValueError:
 						# this is not a Bravia TV device as the list index was not matched; it still could be controllable and
-						# the model just be not presented...
+						# the model just be not presented... setting it to empty will attempt the second load
 						displayName = u''
-						
-						if networkDevice.usn.startswith(u'schemas-sony-com:service:ScalarWebAPI') or networkDevice.usn.startswith(u'schemas-sony-com:service:IRCC'):
-							displayName = ipAddress
 					except:	
 						self.logger.exception(u'Error parsing uPnp results')
 						displayName = ipAddress
+						
+					# if the display name is still empty, try and use the IP address
+					if networkDevice.usn.startswith(u'schemas-sony-com:service:ScalarWebAPI') or networkDevice.usn.startswith(u'schemas-sony-com:service:IRCC'):
+						displayName = ipAddress
 				
+					# all attempts to parse the return have completed;
 					# only add to the menu items if a display name is set
 					if displayName != u'':
 						menuItems.append((u'IDX' + RPFramework.RPFrameworkUtils.to_unicode(deviceIdx), displayName))

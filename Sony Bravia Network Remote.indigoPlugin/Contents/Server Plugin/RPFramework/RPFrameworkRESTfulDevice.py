@@ -449,7 +449,7 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 			self.hostPlugin.logger.error(u'An error occurred processing the SOAP/JSON POST request: (Device: ' + RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u'): ' + RPFrameworkUtils.to_unicode(err))
 			
 		if response is not None:
-			self.hostPlugin.logger.debug(RPFrameworkUtils.to_unicode(responseObj.text))
+			self.hostPlugin.logger.debug(RPFrameworkUtils.to_unicode(response.text))
 			
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	# This routine will handle notification to the device whenever a file was successfully
