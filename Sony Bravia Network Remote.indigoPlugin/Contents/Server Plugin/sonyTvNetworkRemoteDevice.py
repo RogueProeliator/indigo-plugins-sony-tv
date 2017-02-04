@@ -154,7 +154,7 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 	def handleRESTfulError(self, rpCommand, err, response=None):
 		if response is None:
 			super(SonyTvNetworkRemoteDevice, self).handleRESTfulError(rpCommand, err, response)
-		elif response.status_code == 401 or response.status_code == 403 or (response.status_code == 500 and response.text.find(u'<errorDescription>Action not authorized</errorDescription>') > 0):
+		elif response.status_code == 401 or response.status_code == 403 or (response.status_code == 500 and (response.text.find(u'<errorDescription>Action not authorized</errorDescription>') > 0 or response.text.find('<errorCode>401</errorCode>') > 0)):
 			self.hostPlugin.logger.info(u'Received an authentication request, attempting now...')
 			self.commandQueue.put(RPFrameworkCommand.RPFrameworkCommand(CMD_AUTHENTICATE_TO_DEVICE, commandPayload=rpCommand.commandPayload))
 		elif response.status_code == 404:
