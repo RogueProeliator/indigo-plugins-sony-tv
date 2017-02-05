@@ -156,7 +156,7 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 			super(SonyTvNetworkRemoteDevice, self).handleRESTfulError(rpCommand, err, response)
 		elif response.status_code == 401 or response.status_code == 403 or (response.status_code == 500 and (response.text.find(u'<errorDescription>Action not authorized</errorDescription>') > 0 or response.text.find('<errorCode>401</errorCode>') > 0)):
 			self.hostPlugin.logger.info(u'Received an authentication request, attempting now...')
-			self.commandQueue.put(RPFrameworkCommand.RPFrameworkCommand(CMD_AUTHENTICATE_TO_DEVICE, commandPayload=rpCommand.commandPayload))
+			self.commandQueue.put(RPFramework.RPFrameworkCommand.RPFrameworkCommand(CMD_AUTHENTICATE_TO_DEVICE, commandPayload=rpCommand.commandPayload))
 		elif response.status_code == 404:
 			self.hostPlugin.logger.error(u'Error executing command: Page Not Found on Device')
 		else:
