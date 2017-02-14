@@ -71,12 +71,12 @@ class SonyTvNetworkRemoteDevice(RPFramework.RPFrameworkRESTfulDevice.RPFramework
 	# of custom headers to the request (does not include file download)
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	def addCustomHTTPHeaders(self, headers):
-		headers["Host"] = self.getRESTfulDeviceAddress()[0]
+		headers["Host"] = RPFramework.RPFrameworkUtils.to_str(self.getRESTfulDeviceAddress()[0])
 		headers["User-Agent"] = "DuncanwareRemote (IndigoPlugin)"
 		
 		authCookie = self.indigoDevice.pluginProps.get("authCookie", "")
 		if authCookie != "":
-			headers["Cookie"] =  authCookie
+			headers["Cookie"] =  RPFramework.RPFrameworkUtils.to_str(authCookie)
 		
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	# This routine should be overridden in individual device classes whenever they must

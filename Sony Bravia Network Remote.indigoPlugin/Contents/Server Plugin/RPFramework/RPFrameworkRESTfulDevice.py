@@ -344,8 +344,8 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 								customHeaders["Content-type"] = "application/json"
 							
 							# execute the URL post to the web service
-							self.hostPlugin.logger.threaddebug(u'Sending SOAP/JSON request:\n' + RPFrameworkUtils.to_str(soapBody))
-							self.hostPlugin.logger.threaddebug(u'Using headers: \n' + RPFrameworkUtils.to_str(customHeaders))
+							self.hostPlugin.logger.threaddebug(u'Sending SOAP/JSON request:\n' + RPFrameworkUtils.to_unicode(soapBody))
+							self.hostPlugin.logger.threaddebug(u'Using headers: \n' + RPFrameworkUtils.to_unicode(customHeaders))
 							responseObj = requests.post(fullGetUrl, headers=customHeaders, verify=False, data=RPFrameworkUtils.to_str(soapBody))
 							
 							if responseObj.status_code == 200:
@@ -356,6 +356,7 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 								self.hostPlugin.logger.threaddebug(command.commandName + u' command response processing completed')
 								
 							else:
+								self.hostPlugin.logger.threaddebug(u'Command Response was not HTTP OK, handling RESTful error')
 								self.handleRESTfulError(command, str(responseObj.status_code), responseObj)
 
 						except Exception, e:
@@ -396,9 +397,9 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 		except SystemExit:
 			pass
 		except Exception:
-			self.hostPlugin.exceptionLog()
+			self.hostPlugin.logger.exception(u'Exception in background processing')
 		except:
-			self.hostPlugin.exceptionLog()
+			self.hostPlugin.logger.exception(u'Exception in background processing')
 		finally:
 			self.hostPlugin.logger.debug(u'Command thread ending processing')
 			self.hostPlugin.closeDatabaseConnection(self.dbConn)
@@ -448,7 +449,7 @@ class RPFrameworkRESTfulDevice(RPFrameworkDevice.RPFrameworkDevice):
 		else:
 			self.hostPlugin.logger.error(u'An error occurred processing the SOAP/JSON POST request: (Device: ' + RPFrameworkUtils.to_unicode(self.indigoDevice.id) + u'): ' + RPFrameworkUtils.to_unicode(err))
 			
-		if response is not None:
+		if not response is None:
 			self.hostPlugin.logger.debug(RPFrameworkUtils.to_unicode(response.text))
 			
 	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
