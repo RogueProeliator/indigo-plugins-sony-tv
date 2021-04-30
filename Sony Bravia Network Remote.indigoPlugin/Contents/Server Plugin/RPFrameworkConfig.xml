@@ -108,6 +108,14 @@
 					</command>
 				</commands>
 			</action>
+			<action indigoId="rePairToDevice">
+				<commands>
+					<command>
+						<commandName>AuthenticateCommand</commandName>
+						<commandFormat></commandFormat>
+					</command>
+				</commands>
+			</action>
 		</actions>
 	</pluginConfig>
 </RPFrameworkConfig>

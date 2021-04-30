@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <Actions>
-	<Action id="sendPowerOnCommand" deviceFilter="self">
+	<Action id="sendPowerOnCommand" uiPath="DeviceActions" deviceFilter="self">
 		<Name>Power On</Name>
 		<CallbackMethod>executeAction</CallbackMethod>
 	</Action>
-	<Action id="sendPowerOffCommand" deviceFilter="self.sonyTvRemoteDevice">
+	<Action id="sendPowerOffCommand" uiPath="DeviceActions" deviceFilter="self.sonyTvRemoteDevice">
 		<Name>Power Off</Name>
 		<CallbackMethod>executeAction</CallbackMethod>
 	</Action>
-	<Action id="sep1" />
-	<Action id="sendRemoteButton" deviceFilter="self.sonyTvRemoteDevice">
+	<Action id="sep1" uiPath="DeviceActions" />
+	<Action id="sendRemoteButton" uiPath="DeviceActions" deviceFilter="self.sonyTvRemoteDevice">
 		<Name>Send button-pressed command</Name>
 		<CallbackMethod>executeAction</CallbackMethod>
 		<ConfigUI>
@@ -131,5 +131,9 @@
 				</List>
 			</Field>
 		</ConfigUI>
+	</Action>
+	<Action id="rePairToDevice" deviceFilter="self.sonyTvRemoteDevice">
+		<Name>Re-Pair to Device</Name>
+		<CallbackMethod>executeAction</CallbackMethod>
 	</Action>
 </Actions>
